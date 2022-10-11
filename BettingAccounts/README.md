@@ -2,7 +2,7 @@
 
 An **object manager object** [(Kalb, 2021)](https://nostarch.com/object-oriented-python) is an object that has been designed to manage other objects. Usually the other objects are of the same class as this makes developing the methods for managing those objects more straightforward. The objects to be managed are usually stored in a dictionary or a list with a logical accessing scheme such as unique dictionary keys
 
-![Object manager object image](https://github.com/samniem/python-oop/tree/main/BettingAccounts/omo.jpg)
+[Object manager object image](https://github.com/samniem/python-oop/tree/main/BettingAccounts/omo.jpg)
 
 
 A **composition** ([Kalb, 2021](https://nostarch.com/object-oriented-python); [Wikipedia, 2022a](https://en.wikipedia.org/wiki/Object_composition)) describes the logical or conceptual structure of information, where one object manages one or more objects of a different type.
