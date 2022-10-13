@@ -13,3 +13,5 @@ AirbusA318 = Plane('Airbus','A318', 2002)
 
 print("A320 year", AirbusA320.year)
 print("vehicle category", Plane.vehicle)
+
+a = int('a')
