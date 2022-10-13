@@ -1,21 +1,99 @@
-## Object Manager Object and Composition
+# Exceptions in Python with Objects
 
-An **object manager object** [(Kalb, 2021)](https://nostarch.com/object-oriented-python) is an object that has been designed to manage other objects. Usually the other objects are of the same class as this makes developing the methods for managing those objects more straightforward. The objects to be managed are usually stored in a dictionary or a list with a logical accessing scheme such as unique dictionary keys
-
-![Object manager object image](omo.jpg "Figure 1. object manager object")
+In Python there are three generic ways to handle errors and issues in code. The three methods are try-except, if-except and an except object that can be set into the two aforementioned ways of handling errors.
 
 
-A **composition** ([Kalb, 2021](https://nostarch.com/object-oriented-python); [Wikipedia, 2022a](https://en.wikipedia.org/wiki/Object_composition)) describes the logical or conceptual structure of information, where one object manages one or more objects of a different type.
+## How [Logical Errors](https://www.geeksforgeeks.org/errors-and-exceptions-in-python/) Behave In Python (and Many Other Programming Languages)
+
+An error is generally thrown when something unexpected happens in the code that should not happen. Some common error causes are
 
 
-## Example program for creating betting accounts
 
-The source code is available [here](https://github.com/samniem/python-oop/tree/main/BettingAccounts).
+1. division by zero
+2. erroneous user input
+3. bad data from API
+4. using wrong type of data for an operation such as adding string to an integer
+5. converting string to an integer and other nonsensical conversion operations
+
+When an error is thrown it will try to exit each function or method upwards until it finds an except block that has been designed to handle the error. If the program does not contain a suitable except handler at some level, then the program will exit with an error status. 
+
+
+### Two Examples With Incorrect Operation Errors
+
+
+```
+a = 'a' + 1
+```
+
+
+which leads to the following error:
+
+TypeError: can only concatenate str (not "int") to str
+
+
+```
+a = int('a')
+```
+
+
+which leads to the following error:
+
+	ValueError: invalid literal for int() with base 10: 'a'
+
+
+## [Try-Except](https://www.w3schools.com/python/python_try_except.asp)
+
+When you perform an operation in Python that is prone to errors, then you may wish to use a try-block followed by an except block. The try block will execute something that you think might lead to an error such as processing user input. If the thing you attempted fails, then the except block will handle the error without crashing the whole program. It is possible to also add a finally clause that will perform some operation regardless of if the try or except block was run successfully. Below is an example of a try-except block in Python.
+
+
+```
+try:
+           float(amount)
+       except ValueError:
+           raise AbortAccountTransaction("Invalid data, please enter a decimal number 
+in 1 or 1.0 type of format.")
+```
+
+
+
+## If-Except Pattern
+
+In the if-except pattern you assert that something specific should be false in terms of a boolean comparison. An example would be expecting a value inputted by an user to be greater than zero. If the condition is false, then you move into the if-block that will throw an exception. If the code moves beyond the if block you know that everything has gone correctly. Below is an example of this simple pattern.
+
+
+```
+if(amount <= 0):
+           raise AbortAccountTransaction("Value cannot be 0 or less")
+       return amount
+```
+
+
+
+## Custom Except Class With Inheritance
+
+A custom except class is used to define a new type of error that can be caught and found in the code based on that particular error keyword. If you for example write a program that handles financial transactions you can define an Except class that is defined as an AbortAccountTransaction error. Using this allows you to catch all of these errors higher up in the code and look for specific error types in the logs for example. Below is an example:
+
+
+```
+class AbortAccountTransaction(Exception):
+   pass
+```
+
+
+What happens in the above example is that the AbortAccountTransaction [inherits](https://www.w3schools.com/python/python_inheritance.asp) the Exception class as is with nothing else added to it. In essence this is simply a standard Exception that has been given a new name for easier recognition of the error context. Then any error falling under this custom Exception class can be caught using an except block as shown below:
+
+
+```
+   except AbortAccountTransaction as Abort:
+       print(Abort)
+```
+
+
+
+## A Practical Example
 
 
 ### Main.py
-
-The main.py program imports the manager class and initializes one object based on the manager class model. Additionally, the main.py file handles user input using a while True loop.
 
 
 ```
@@ -24,7 +102,7 @@ from AccountsManager import *
 manager = AccountsManager()
 print("Input list:")
 print("\tn - new account (name, password, balance)")
-print("\ta - add balance (id, password, balance)")
+print("\ta - add balace (id, password, balance)")
 print("\tw - withdraw balance (id, password, balance)")
 print("\td - delete account (id)")
 print("\tv - view balance (id, password)")
@@ -32,37 +110,38 @@ print("\tq - quit program")
 
 while True:
    option = input("Select action: ")
-   if(option == "n"):
-       name = input("Add account name: ")
-       pw = input("Add account password: ")
-       bal = float(input("Add account balance: "))
-       id = manager.addAccount(name, pw, bal)
-       print("Account id is", id)
-   elif(option == "v"):
-       id = int(input("Please provide account id "))
-       pw = input("Please provide password ")
-       manager.viewBalance(id, pw)
-   elif(option == "a"):
-       id = int(input("Please provide account id "))
-       pw = input("Please provide password ")
-       bal = float(input("Please provide balance to add "))
-       manager.addBalance(id, pw, bal)
-   elif(option == "w"):
-       id = int(input("Please provide account id "))
-       pw = input("Please provide password ")
-       bal = float(input("Please provide balance to withdraw "))
-       manager.withdrawBalance(id, pw, bal)
-   elif(option == "q"):
-       break
-   else:
-       print("Incorrect input")
+   try:
+       if(option == "n"):
+           name = input("Add account name: ")
+           pw = input("Add account password: ")
+           amt = input("Add account balance: ")
+           id = manager.addAccount(name, pw, amt)
+           print("Account id is", id)
+       elif(option == "v"):
+           id = input("Please provide account id: ")
+           pw = input("Please provide password: ")
+           manager.viewBalance(id, pw)
+       elif(option == "a"):
+           id = input("Please provide account id: ")
+           pw = input("Please provide password: ")
+           amt = input("Please provide balance to add: ")
+           manager.addBalance(id, pw, amt)
+       elif(option == "w"):
+           id = input("Please provide account id: ")
+           pw = input("Please provide password: ")
+           amt = input("Please provide balance to withdraw: ")
+           manager.withdrawBalance(id, pw, amt)
+       elif(option == "q"):
+           break
+       else:
+           print("Incorrect input")
+   except AbortAccountTransaction as Abort:
+       print(Abort)
 ```
 
 
 
 ### AccountsManager.py
-
-This file manages user requests made from main.py related to specific accounts. The class model for each specific account is imported from Account.py. 
 
 
 ```
@@ -73,24 +152,37 @@ class AccountsManager():
        self.accounts = {}
        self.latestAccount = 0
 
+   def findValidAccount(self, id, password):
+       try:
+           int(id)
+       except ValueError:
+           AbortAccountTransaction("Invalid account id format, please provide an integer number")
+       account = self.accounts[id]
+       if(account == None):
+           abortAccountTransaction("Invalid account id")
+       print("GOT ACCT", account)
+       if(account.isValidPassword(password)):
+           return account
+
    def addAccount(self, name, password, balance=0):
        newAccount = Account(name, password, balance)
        self.latestAccount += 1
        self.accounts[self.latestAccount] = newAccount
        return self.latestAccount
 
-   def viewBalance(self, accountNumber, password):
-       a = self.accounts[accountNumber]
-       if(a.password == password):
-           print("Account", a.name, "has", a.balance)
-       else:
-           print("Incorrect password")
-   def addBalance(self, accountNumber, password, balance):
-       a = self.accounts[accountNumber]
-       a.addBalance(balance, password)
-   def withdrawBalance(self, accountNumber, password, balance):
-       a = self.accounts[accountNumber]
+   def viewBalance(self, accountId, password):
+       a = self.findValidAccount(accountId, password)
+       print("Account", a.name, "has", a.balance)
+
+   def addBalance(self, accountId, password, balance):
+       a = self.findValidAccount(accountId, password)
+       print("A", a)
+       a.addBalance(balance)
+
+   def withdrawBalance(self, accountId, password, balance):
+       a = self.findValidAccount(accountId, password)
        a.withdrawBalance(balance, password)
+
    def deleteAccount(self, accountNumber):
        del self.accounts[accountNumber]
 ```
@@ -99,47 +191,44 @@ class AccountsManager():
 
 ### Accounts.py
 
-The account.py handles operations such as depositing funds and withdrawing funds for an individual betting account.
-
 
 ```
+class AbortAccountTransaction(Exception):
+   pass
+
 class Account():
    def __init__(self, name, password, balance):
        self.balance = balance
        self.name = name
-       self.password = password
+       self.__password = password
+
+
+   def isValidPassword(self, password):
+       if(password == self.__password):
+           return True
+       raise AbortAccountTransaction("Invalid password")
+
+   def isValidAmount(self, amount):
+       try:
+           float(amount)
+       except ValueError:
+           raise AbortAccountTransaction("Invalid data, please enter a decimal number in 1 or 1.0 type of format.")
+       if(amount <= 0):
+           raise AbortAccountTransaction("Value cannot be 0 or less")
+       return amount
+
+   def addBalance(self, amount, password):
+       self.isValidAmount(amount)
+       self.balance += balance
+       print("New balance is:", self.balance)
 
 
 
-   def addBalance(self, balance, password):
-       if(password != self.password):
-           print("Incorrect password")
-       elif(balance <= 0):
-           print("Cannot add negative or zero balance")
-       else:
-           self.balance += balance
-
-
-
-   def withdrawBalance(self, balance, password):
-       if(password != self.password):
-           print("Incorrect password")
-       elif(balance >= 0):
-           print("Cannot withdraw zero or negative balance")
-       elif(balance > self.balance):
-           print("Cannot withdraw more than account balance", self.balance)
+   def withdrawBalance(self, amount, password):
+       self.isValidAmount(amount)
+       if(balance > self.balance):
+           AbortAccountTransaction("Cannot withdraw more than account balance", self.balance)
        else:
            self.balance -= balance
 
 
-```
-
-
-
-## References
-
-Kalb, I. (2021). Object-Oriented Python: Master OOP by Building Games and GUIs. No Starch Press. https://nostarch.com/object-oriented-python
-
-Wikipedia (2022a). Object composition. https://en.wikipedia.org/wiki/Object_composition
-
-Wikipedia (2022b). Object-oriented Design. https://en.wikipedia.org/wiki/Object-oriented_design
